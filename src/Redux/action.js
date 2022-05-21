@@ -44,3 +44,12 @@ export const toggleUpdateTodo = (id) =>{
     }
 }
 
+
+export const sortTodo = (by) =>{
+   
+    return {
+        type:SORT_TODO,
+        payload:by
+    }
+}
+

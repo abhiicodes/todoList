@@ -10,15 +10,18 @@ export default function TodoItem({
   toggleUpdate,
   handleStatus,
   handleUpdate,
+  filt,
 }) {
   const [upd, setUp] = useState({});
   const todo = useSelector((store) => store.todo);
   return (
     <div>
-      {todo.map((e) => {
-        return (
-          <div key={e.id}>
-            {/* {e.update ? (
+      {todo
+        .filter((el) => el["name"].includes(filt))
+        .map((e) => {
+          return (
+            <div key={e.id}>
+              {/* {e.update ? (
               <input
                 id={e.id}
                 value={upd[e.id]}
@@ -61,67 +64,69 @@ export default function TodoItem({
               {e.update ? <CheckIcon /> : <EditIcon />}
             </button> */}
 
-            {/* <h1>
+              {/* <h1>
               {e.name}-{e.status ? "Done" : "Not Done"}
             </h1> */}
 
-{e.update ? (
-              <input
-                id={e.id}
-                value={upd[e.id]}
-                onChange={(e) => {
-                  setUp({
-                    ...upd,
-                    [e.target.id]: e.target.value,
-                  });
+              {e.update ? (
+                <input
+                  id={e.id}
+                  value={upd[e.id]}
+                  onChange={(e) => {
+                    setUp({
+                      ...upd,
+                      [e.target.id]: e.target.value,
+                    });
+                  }}
+                ></input>
+              ) : (
+                <h1>{e.name}</h1>
+              )}
+              <h3>{e.status ? "DONE" : "NOT DONE"}</h3>
+              <button
+                onClick={() => {
+                  handleDelete(e.id);
                 }}
-              ></input>
-            ) : (
-              <h1>{e.name}</h1>
-            )}
-            <h3>{e.status?"DONE":"NOT DONE"}</h3>
-            <button
-              onClick={() => {
-                handleDelete(e.id);
-              }}
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => {
-                handleStatus(e.id);
-              }}
-            >
-              Toggle
-            </button>
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => {
+                  handleStatus(e.id);
+                }}
+              >
+                Toggle
+              </button>
 
-           {e.update?<button
-              onClick={() => {
-                toggleUpdate(e.id);
+              {e.update ? (
+                <button
+                  onClick={() => {
+                    toggleUpdate(e.id);
 
-                handleUpdate({
-                  id: e.id,
-                  text: upd[e.id],
-                });
-              }}
-            >
-              confirm
-            </button>:<button
-              onClick={() => {
-                setUp({
-                  ...upd,
-                  [e.id]: e.name,
-                });
-                toggleUpdate(e.id);
-
-              
-              }}
-            >
-              Edit
-            </button>} 
-          </div>
-        );
-      })}
+                    handleUpdate({
+                      id: e.id,
+                      text: upd[e.id],
+                    });
+                  }}
+                >
+                  confirm
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setUp({
+                      ...upd,
+                      [e.id]: e.name,
+                    });
+                    toggleUpdate(e.id);
+                  }}
+                >
+                  Edit
+                </button>
+              )}
+            </div>
+          );
+        })}
     </div>
   );
 }
