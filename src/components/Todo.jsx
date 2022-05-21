@@ -3,20 +3,31 @@ import axios from "axios";
 import React from "react";
 import { nanoid } from "nanoid";
 import TodoItem from "./TodoItem";
+import AddIcon from '@mui/icons-material/Add';
+
+import { addTodo, deleteTodo, toggleUpdateTodo } from "../Redux/action";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleTodo, editTodo } from './../Redux/action';
+
+
 export default function Todo() {
   const [text, setText] = useState("");
-  const [todo, setTodo] = useState([]);
-  const [showAdd, setShowAdd] = useState(true)
+  // const [todo, setTodo] = useState([]);
+  // const [showAdd, setShowAdd] = useState(true)
 
-  useEffect(() => {
-    getData();
-  }, []);
+const dispatch = useDispatch()
+const todo = useSelector((store)=>store.todo)
 
-  async function getData() {
-    axios.get("http://localhost:8080/data").then((d) => {
-      setTodo(d.data);
-    });
-  }
+
+  // useEffect(() => {
+  //   getData();
+  // }, []);
+
+  // async function getData() {
+  //   axios.get("http://localhost:8080/data").then((d) => {
+  //     setTodo(d.data);
+  //   });
+  // }
 
   const setTodos = () => {
     let newTodo = {
@@ -25,78 +36,90 @@ export default function Todo() {
       id: nanoid(),
       update:false
     };
-    setTodo([...todo, newTodo]);
-    sendData(newTodo);
+    dispatch(addTodo(newTodo))
+
+    // setTodo([...todo, newTodo]);
+    // sendData(newTodo);
   };
 
   const handleStatus = (id) => {
     // console.log("func", id)
   
 
-    setTodo(
-      todo.map((e) => {
-        if (e.id == id) {
-          axios
-            .patch(`http://localhost:8080/data/${id}`, { status: !e.status })
-            .then((res) => {
-              // console.log(res)
-            });
-          return { ...e, status: !e.status };
-        } else {
-          return e;
-        }
-      }) 
-    );
+    // setTodo(
+    //   todo.map((e) => {
+    //     if (e.id == id) {
+    //       // axios
+    //       //   .patch(`http://localhost:8080/data/${id}`, { status: !e.status })
+    //       //   .then((res) => {
+    //       //     // console.log(res)
+    //       //   });
+    //       return { ...e, status: !e.status };
+    //     } else {
+    //       return e;
+    //     }
+    //   }) 
+    // );
   
+
+    dispatch(toggleTodo(id))
     
   };
 
 
- const handleUpdate = (id,upp,upname)=>{
-if(upp==false){
-  setTodo(
-    todo.map((e) => {
-      if (e.id == id) {
-        axios
-          .patch(`http://localhost:8080/data/${id}`, { update: !e.update })
-          .then((res) => {
-            // console.log(res)
-          });
-        return { ...e, update: !e.update };
-      } else {
-        return e;
-      }
-    }) 
-  );
-}else{
-  setTodo(
-    todo.map((e) => {
-      if (e.id == id) {
-        axios
-          .patch(`http://localhost:8080/data/${id}`, { name: upname,update: !e.update })
-          .then((res) => {
-            // console.log(res)
-          });
-        return { ...e, name:upname,update: !e.update };
-      } else {
-        return e;
-      }
-    }) 
-  );
-}
-
+ const handleUpdate = (data)=>{
+// if(upp==false){
+//   setTodo(
+//     todo.map((e) => {
+//       if (e.id == id) {
+//         // axios
+//         //   .patch(`http://localhost:8080/data/${id}`, { update: !e.update })
+//         //   .then((res) => {
+//         //     // console.log(res)
+//         //   });
+//         return { ...e, update: !e.update };
+//       } else {
+//         return e;
+//       }
+//     }) 
+//   );
+// }else{
+//   setTodo(
+//     todo.map((e) => {
+//       if (e.id == id) {
+//         // axios
+//         //   .patch(`http://localhost:8080/data/${id}`, { name: upname,update: !e.update })
+//         //   .then((res) => {
+//         //     // console.log(res)
+//         //   });
+//         return { ...e, name:upname,update: !e.update };
+//       } else {
+//         return e;
+//       }
+//     }) 
+//   );
+// }
+dispatch(editTodo(data))
 
  }
 
 
   const handleDelete = (id) => {
-    setTodo(todo.filter((e) => e.id !== id));
-    axios.delete(`http://localhost:8080/data/${id}`);
+    // setTodo(todo.filter((e) => e.id !== id));
+    // axios.delete(`http://localhost:8080/data/${id}`);
+
+    dispatch(deleteTodo(id))
   };
 
-  const sendData = (data) => {
-    axios.post("http://localhost:8080/data", data);
-  };
+  // const sendData = (data) => {
+  //   axios.post("http://localhost:8080/data", data);
+  // };
+
+  const toggleUpdate=(id)=>{
+    dispatch(toggleUpdateTodo(id))
+  }
+
+
 
   return (
     <div>
@@ -106,15 +129,22 @@ if(upp==false){
           setText(e.target.value);
         }}
       />
-      <button onClick={setTodos}>{showAdd?"Add Todo":"Update Todo"}</button>
+      <button onClick={setTodos}><AddIcon/></button>
      
      
      <TodoItem
-        todo={todo}
+       
         handleStatus={handleStatus}
         handleDelete={handleDelete}
         handleUpdate = {handleUpdate}
+        toggleUpdate={toggleUpdate}
       />
+
+      {/* {todo.map((e)=>{
+        return (
+          <h1 key={e.id}>{e.name}</h1>
+        )
+      })} */}
     </div>
   );
 }
